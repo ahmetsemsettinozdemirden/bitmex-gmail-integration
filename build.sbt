@@ -12,7 +12,7 @@ resolvers += Resolver.sbtPluginRepo("releases")
 libraryDependencies += guice
 
 libraryDependencies += ws
-libraryDependencies += "org.postgresql" % "postgresql" % "42.2.1"
 libraryDependencies += jdbc
+libraryDependencies += "com.h2database" % "h2" % "1.4.192"
 libraryDependencies += "com.auth0" % "java-jwt" % "3.3.0"
 libraryDependencies += "org.mindrot" % "jbcrypt" % "0.3m"
