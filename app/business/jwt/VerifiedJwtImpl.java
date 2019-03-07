@@ -34,19 +34,19 @@ public class VerifiedJwtImpl implements VerifiedJwt {
     private String header;
     private String payload;
     private String issuer;
-    private Long id;
+    private String username;
     private Date expiresAt;
 
     public VerifiedJwtImpl(DecodedJWT decodedJWT) {
         this(decodedJWT.getHeader(), decodedJWT.getPayload(), decodedJWT.getIssuer(),
-                decodedJWT.getClaim("id").asLong(), decodedJWT.getExpiresAt());
+                decodedJWT.getClaim("username").asString(), decodedJWT.getExpiresAt());
     }
 
-    public VerifiedJwtImpl(String header, String payload, String issuer, Long id, Date expiresAt) {
+    public VerifiedJwtImpl(String header, String payload, String issuer, String username, Date expiresAt) {
         this.header = header;
         this.payload = payload;
         this.issuer = issuer;
-        this.id = id;
+        this.username = username;
         this.expiresAt = expiresAt;
     }
 
@@ -71,8 +71,8 @@ public class VerifiedJwtImpl implements VerifiedJwt {
     }
 
     @Override
-    public Long getId() {
-        return id;
+    public String getUsername() {
+        return username;
     }
 
     @Override

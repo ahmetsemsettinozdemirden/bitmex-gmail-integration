@@ -19,12 +19,12 @@ public class JwtHelperImpl implements JwtHelper {
         this.config = config;
     }
 
-    public String getSignedToken(Long id) throws UnsupportedEncodingException {
+    public String getSignedToken(String username) throws UnsupportedEncodingException {
         String secret = config.getString("play.http.secret.key");
         Algorithm algorithm = Algorithm.HMAC256(secret);
         return JWT.create()
                 .withIssuer("bitmex-api")
-                .withClaim("id", id)
+                .withClaim("username", username)
                 .withExpiresAt(Date.from(ZonedDateTime.now(ZoneId.systemDefault()).plusYears(999L).toInstant()))
                 .sign(algorithm);
     }

@@ -30,6 +30,6 @@ public interface VerifiedJwt {
     String getHeader();
     String getPayload();
     String getIssuer();
-    Long getId();
+    String getUsername();
     Date getExpiresAt();
 }

@@ -73,7 +73,7 @@ public class JwtValidatorImpl implements JwtValidator {
                 throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", ne);
             }
             return F.Either.Right(new VerifiedJwtImpl(parts[0], parts[1], payload.get("iss").asText(),
-                    payload.get("id").asLong(), new Date(payload.get("exp").asLong())));
+                    payload.get("username").asText(), new Date(payload.get("exp").asLong())));
         } catch (JWTVerificationException exception) {
             //Invalid signature/claims
             logger.warn("f=JwtValidatorImpl, event=verify, exception=JWTVerificationException, msg={}",

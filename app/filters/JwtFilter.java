@@ -1,6 +1,7 @@
 package filters;
 
 import akka.stream.Materializer;
+import business.admin.AdminRepository;
 import business.handlers.ErrorHandler;
 import business.jwt.JwtAttrs;
 import business.jwt.JwtValidator;
@@ -29,12 +30,14 @@ public class JwtFilter extends Filter {
     private static final String ERR_ADMIN_NOT_FOUND = "ERR_ADMIN_NOT_FOUND";
     private static final String ERR_TOKEN_MISMATCH = "ERR_TOKEN_MISMATCH";
 
-    private JwtValidator jwtValidator;
-    private ErrorHandler errorHandler;
+    private final AdminRepository adminRepository;
+    private final JwtValidator jwtValidator;
+    private final ErrorHandler errorHandler;
 
     @Inject
-    public JwtFilter(Materializer mat, JwtValidator jwtValidator, ErrorHandler errorHandler) {
+    public JwtFilter(Materializer mat, AdminRepository adminRepository, JwtValidator jwtValidator, ErrorHandler errorHandler) {
         super(mat);
+        this.adminRepository = adminRepository;
         this.jwtValidator = jwtValidator;
         this.errorHandler = errorHandler;
     }
@@ -58,7 +61,7 @@ public class JwtFilter extends Filter {
 
             VerifiedJwt verifiedJwt = res.right.get();
 
-            Admin admin = Admin.finder.byId(verifiedJwt.getId());
+            Admin admin = adminRepository.getAdmin(verifiedJwt.getUsername());
 
             if (admin == null)
                 return errorHandler.onClientErrorCompletionStage(requestHeader, BAD_REQUEST, "ERR_ADMIN_NOT_FOUND", ERR_ADMIN_NOT_FOUND);

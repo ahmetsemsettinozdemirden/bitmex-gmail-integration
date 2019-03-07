@@ -1,6 +1,8 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
+import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
 import io.ebean.annotation.NotNull;
 import io.ebean.annotation.UpdatedTimestamp;
@@ -10,7 +12,7 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
-public class BitmexCredentials {
+public class BitmexCredentials extends Model {
 
     @Id
     private Long id;
@@ -46,10 +48,12 @@ public class BitmexCredentials {
         return apiSecret;
     }
 
+    @JsonIgnore
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    @JsonIgnore
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
