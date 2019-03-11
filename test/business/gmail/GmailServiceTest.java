@@ -41,7 +41,7 @@ public class GmailServiceTest {
     @Test
     public void testGmailHelper() throws IOException {
         GmailHelper gmailHelper = app.injector().instanceOf(GmailHelper.class);
-        gmailHelper.getThreads();
+        gmailHelper.getTradingViewTip();
     }
 
 }

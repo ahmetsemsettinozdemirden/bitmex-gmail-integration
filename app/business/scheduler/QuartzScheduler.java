@@ -72,7 +72,7 @@ public class QuartzScheduler {
         scheduler.clear();
 
         logger.info("Schedule jobs...");
-        scheduleJob(GmailToBitmexJob.class, "0 * * * * ?");
+        scheduleJob(GmailToBitmexJob.class, "*/15 * * * * ?");
         logger.debug("job names: " + scheduler.getJobKeys(GroupMatcher.anyJobGroup()));
 
         scheduler.start();

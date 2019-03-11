@@ -47,12 +47,12 @@ public class BitmexHelper {
         return signature;
     }
 
-    private void createRequest() {
+    public void createRequest(String currency, int orderQty) {
 
         BitmexCredentials bitmexCredentials = bitmexRepository.getCredentials();
         String signature;
 
-        String data = "{\"symbol\":\"XBTUSD\",\"orderQty\":50,\"ordType\":\"Market\"}";
+        String data = "{\"symbol\":\"" + currency + "\",\"orderQty\":" + orderQty + ",\"ordType\":\"Market\"}";
 
         String verb = "POST";
         String path = "/api/v1/order";
@@ -64,7 +64,7 @@ public class BitmexHelper {
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             // TODO: throw server error
             logger.error("hash calculation error.", e);
-            return;
+            throw new RuntimeException(e);
         }
 
         try {
@@ -81,6 +81,7 @@ public class BitmexHelper {
             logger.info("response: {}", response.getBody());
         } catch (ExecutionException | InterruptedException e) {
             logger.error("bitmex request error.", e);
+            throw new RuntimeException(e);
         }
 
     }
