@@ -1,10 +1,14 @@
 package business.main;
 
 import business.bitmex.BitmexHelper;
+import business.bitmex.BitmexPosition;
+import business.exceptions.ServerException;
 import business.gmail.GmailHelper;
 import play.Logger;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GmailToBitmex {
 
@@ -22,27 +26,35 @@ public class GmailToBitmex {
         logger.info("GmailToBitmexJob is starting...");
 
         logger.debug("checking gmail...");
-        String tip = null;
+        List<BitmexPosition> desiredPositions = new ArrayList<>();
         try {
-            tip = gmailHelper.getTradingViewTip();
+            List<String> tips = gmailHelper.getTradingViewTip();
+            for (String tip: tips) {
+                String[] parts = tip.split(",");
+                if (parts.length != 2)
+                    throw new RuntimeException("tip must include 2 parts, tip: " + tip);
+                desiredPositions.add(new BitmexPosition(parts[0], Integer.parseInt(parts[1])));
+            }
         } catch (Exception e) {
-//            logger.error("email error", e);
+            logger.error("email error", e);
             return;
         }
-        if (tip == null)
-            throw new RuntimeException("tip format problem, tip: " + tip);
 
         logger.debug("buy/sell on bitmex...");
-
-        String[] parts = tip.split(",");
-
-        if (parts.length != 2)
-            throw new RuntimeException("tip must include 2 parts, tip: " + tip);
-
-        String currency = parts[0];
-        int orderQty = Integer.parseInt(parts[1]);
-
-        bitmexHelper.createRequest(currency, orderQty);
+        for (BitmexPosition desiredPosition: desiredPositions) {
+            try {
+                BitmexPosition calculatedPosition = new BitmexPosition(desiredPosition.getSymbol(), desiredPosition.getQuantity());
+                List<BitmexPosition> currentPositions = bitmexHelper.getPositions();
+                for (BitmexPosition currentPosition : currentPositions) {
+                    if (currentPosition.getSymbol().equals(desiredPosition.getSymbol())) {
+                        calculatedPosition.setQuantity(desiredPosition.getQuantity() - currentPosition.getQuantity());
+                    }
+                }
+                bitmexHelper.makeMarketOrder(calculatedPosition);
+            } catch (ServerException e) {
+                logger.error("bitmex make order error!", e);
+            }
+        }
 
         logger.info("GmailToBitmexJob is completed successfully.");
     }

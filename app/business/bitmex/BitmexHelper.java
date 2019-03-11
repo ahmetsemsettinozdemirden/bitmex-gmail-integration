@@ -1,89 +1,73 @@
 package business.bitmex;
 
+import business.exceptions.ServerException;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.BitmexCredentials;
 import play.Logger;
-import play.libs.Json;
-import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import javax.xml.bind.DatatypeConverter;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class BitmexHelper {
 
     private final BitmexRepository bitmexRepository;
-    private final WSClient wsClient;
+    private final BitmexService bitmexService;
     private final Logger.ALogger logger = Logger.of(this.getClass());
 
     @Inject
-    public BitmexHelper(BitmexRepository bitmexRepository, WSClient wsClient) {
+    public BitmexHelper(BitmexRepository bitmexRepository, BitmexService bitmexService) {
         this.bitmexRepository = bitmexRepository;
-        this.wsClient = wsClient;
+        this.bitmexService = bitmexService;
     }
 
-    private String calculateHash(String apiSecret, String verb, String path, long expires, String data)
-            throws NoSuchAlgorithmException, InvalidKeyException {
-
-        String message = verb + path + expires + data;
-        logger.debug("message: {}", message);
-
-        Mac hasher = Mac.getInstance("HmacSHA256");
-        hasher.init(new SecretKeySpec(apiSecret.getBytes(), "HmacSHA256"));
-
-        byte[] hash = hasher.doFinal(message.getBytes());
-
-        // to lowercase hexits
-        String signature = DatatypeConverter.printHexBinary(hash);
-        logger.debug("signature: {}", signature);
-
-        return signature;
-    }
-
-    public void createRequest(String currency, int orderQty) {
+    public List<BitmexPosition> getPositions() throws ServerException {
 
         BitmexCredentials bitmexCredentials = bitmexRepository.getCredentials();
-        String signature;
+        String data = "{}";
+        String verb = "GET";
+        String path = "/api/v1/position";
 
-        String data = "{\"symbol\":\"" + currency + "\",\"orderQty\":" + orderQty + ",\"ordType\":\"Market\"}";
+        try {
+            WSResponse wsResponse = bitmexService.createRequest(bitmexCredentials, data, verb, path).execute()
+                    .toCompletableFuture().get();
+            JsonNode response = wsResponse.asJson();
+            logger.debug("getPositions response: {}.", wsResponse.getBody());
 
+            if (wsResponse.getStatus() >= 400)
+                throw new ServerException("http-error", new Exception(wsResponse.getBody()));
+
+            List<BitmexPosition> positions = new ArrayList<>();
+            for (JsonNode positionNode: response) {
+                positions.add(new BitmexPosition(positionNode.get("symbol").asText(),
+                        positionNode.get("currentQty").asInt()));
+            }
+            return positions;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ServerException("execute-request", e);
+        }
+    }
+
+    public void makeMarketOrder(BitmexPosition bitmexPosition) throws ServerException {
+
+        BitmexCredentials bitmexCredentials = bitmexRepository.getCredentials();
+        String data = "{\"symbol\":\"" + bitmexPosition.getSymbol() +
+                "\",\"orderQty\":" + bitmexPosition.getQuantity() + ",\"ordType\":\"Market\"}";
         String verb = "POST";
         String path = "/api/v1/order";
-        long expires = LocalDateTime.now().plusMinutes(1).toInstant(ZoneOffset.UTC).toEpochMilli();
-        JsonNode jsonBody = Json.parse(data);
 
         try {
-            signature = calculateHash(bitmexCredentials.getApiSecret(), verb, path, expires, data);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            // TODO: throw server error
-            logger.error("hash calculation error.", e);
-            throw new RuntimeException(e);
-        }
+            WSResponse wsResponse = bitmexService.createRequest(bitmexCredentials, data, verb, path).execute()
+                    .toCompletableFuture().get();
+            logger.debug("makeOrder response: {}.", wsResponse.getBody());
 
-        try {
-            WSResponse response = wsClient.url("https://testnet.bitmex.com" + path)
-                    .addHeader("content-type", "application/json")
-                    .addHeader("Accept", "application/json")
-                    .addHeader("X-Requested-With", "XMLHttpRequest")
-                    .addHeader("api-expires", Long.toString(expires))
-                    .addHeader("api-key", bitmexCredentials.getApiKey())
-                    .addHeader("api-signature", signature)
-                    .post(data)
-                    .toCompletableFuture()
-                    .get();
-            logger.info("response: {}", response.getBody());
-        } catch (ExecutionException | InterruptedException e) {
-            logger.error("bitmex request error.", e);
-            throw new RuntimeException(e);
+            if (wsResponse.getStatus() >= 400)
+                throw new ServerException("http-error", new Exception(wsResponse.getBody()));
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ServerException("execute-request", e);
         }
-
     }
 
 }
