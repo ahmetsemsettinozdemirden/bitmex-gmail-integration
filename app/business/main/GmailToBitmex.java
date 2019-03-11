@@ -22,7 +22,9 @@ public class GmailToBitmex {
         logger.info("GmailToBitmexJob is starting...");
 
         logger.debug("checking gmail...");
-        // TODO: check gmail
+        try {
+            gmailHelper.getThreads();
+        } catch (Exception e) {}
 
         logger.debug("buy/sell on bitmex...");
         // TODO: buy/sell on bitmex
