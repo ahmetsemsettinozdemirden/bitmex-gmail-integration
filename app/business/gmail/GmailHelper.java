@@ -2,7 +2,6 @@ package business.gmail;
 
 import com.google.api.services.gmail.model.ListThreadsResponse;
 import com.google.api.services.gmail.model.MessagePartHeader;
-import com.google.api.services.gmail.model.ModifyThreadRequest;
 import com.google.api.services.gmail.model.Thread;
 import play.Logger;
 
@@ -29,7 +28,7 @@ public class GmailHelper {
                 .setQ("from:ahmetozdemirden@std.iyte.edu.tr is:unread").execute();
         List<Thread> threads = threadsResponse.getThreads();
         if (threads == null || threads.isEmpty()) {
-            throw new RuntimeException("no new messages");
+            return new ArrayList<>();
         } else {
             List<String> tips = new ArrayList<>();
             for (Thread thread: threads) {
@@ -37,7 +36,7 @@ public class GmailHelper {
                 List<MessagePartHeader> headers =  threadData.getMessages().get(0).getPayload().getHeaders();
                 for (MessagePartHeader header: headers) {
                     if (header.getName().equals("Subject")) {
-                        logger.debug("- {}\n", header.getValue());
+                        logger.debug("- {}", header.getValue());
                         tips.add(header.getValue());
                     }
                 }
