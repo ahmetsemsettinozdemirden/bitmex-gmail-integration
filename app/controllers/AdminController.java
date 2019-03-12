@@ -1,6 +1,6 @@
 package controllers;
 
-import business.admin.AdminHelper;
+import business.admin.AdminService;
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import business.handlers.ErrorHandler;
@@ -10,25 +10,22 @@ import play.data.FormFactory;
 import play.data.validation.ValidationError;
 import play.libs.Json;
 import play.mvc.BodyParser;
+import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
 
-import static play.mvc.Http.Context.Implicit.request;
-import static play.mvc.Http.Status.BAD_REQUEST;
-import static play.mvc.Results.ok;
-
 @BodyParser.Of(BodyParser.Json.class)
-public class AdminController {
+public class AdminController extends Controller {
 
     private final FormFactory formFactory;
-    private final AdminHelper adminHelper;
+    private final AdminService adminService;
     private final ErrorHandler errorHandler;
 
     @Inject
-    public AdminController(FormFactory formFactory, AdminHelper adminHelper, ErrorHandler errorHandler) {
+    public AdminController(FormFactory formFactory, AdminService adminService, ErrorHandler errorHandler) {
         this.formFactory = formFactory;
-        this.adminHelper = adminHelper;
+        this.adminService = adminService;
         this.errorHandler = errorHandler;
     }
 
@@ -46,7 +43,7 @@ public class AdminController {
         AdminForm adminBody = adminForm.get();
 
         try {
-            return ok(Json.toJson(adminHelper.signIn(adminBody.username, adminBody.password)));
+            return ok(Json.toJson(adminService.signIn(adminBody.username, adminBody.password)));
         } catch (ClientException e) {
             return errorHandler.onClientError(BAD_REQUEST, "admin-signIn-" + e.getErrorCode(), e.getMessage(),
                     request().method() + " " + request().uri());
@@ -70,7 +67,7 @@ public class AdminController {
         AdminForm adminBody = adminForm.get();
 
         try {
-            return ok(Json.toJson(adminHelper.signUp(adminBody.username, adminBody.password)));
+            return ok(Json.toJson(adminService.signUp(adminBody.username, adminBody.password)));
         } catch (ClientException e) {
             return errorHandler.onClientError(BAD_REQUEST, "admin-signUp-" + e.getErrorCode(), e.getMessage(),
                     request().method() + " " + request().uri());

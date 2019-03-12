@@ -11,6 +11,11 @@ POST    /admin/signIn               controllers.AdminController.signIn
 + admin
 POST    /admin/signUp               controllers.AdminController.signUp
 
+# Bitmex
++ admin
+GET     /bitmex                     controllers.BitmexController.get
++ admin
+POST    /bitmex                     controllers.BitmexController.update
 
 
 # Map static resources from the /public folder to the /assets URL path

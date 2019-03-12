@@ -28,15 +28,31 @@ public class BitmexService {
     public WSRequest createRequest(BitmexCredentials bitmexCredentials, String data, String verb, String path)
             throws ServerException {
 
+        if (bitmexCredentials == null)
+            throw new RuntimeException("bitmexCredentials can not be null.");
+
+        if (data == null || data.trim().equals(""))
+            throw new RuntimeException("data can not be null or empty.");
+
+        if (!"get".equalsIgnoreCase(verb) && !"post".equalsIgnoreCase(verb) &&
+                !"put".equalsIgnoreCase(verb) && !"delete".equalsIgnoreCase(verb))
+            throw new RuntimeException("verb should be an http request method, see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods");
+
+        if (path == null || path.trim().equals(""))
+            throw new RuntimeException("path can not be null or empty.");
+
+        String trimmedData = data.trim();
+        String trimmedPath = path.trim();
+
         String signature;
         long expires = LocalDateTime.now().plusMinutes(1).toInstant(ZoneOffset.UTC).toEpochMilli();
         try {
-            signature = calculateHash(bitmexCredentials.getApiSecret(), verb, path, expires, data);
+            signature = calculateHash(bitmexCredentials.getApiSecret(), verb, trimmedPath, expires, trimmedData);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new ServerException("hash-calculation", e);
         }
 
-        return wsClient.url("https://testnet.bitmex.com" + path)
+        return wsClient.url("https://testnet.bitmex.com" + trimmedPath)
                 .addHeader("content-type", "application/json")
                 .addHeader("Accept", "application/json")
                 .addHeader("X-Requested-With", "XMLHttpRequest")
@@ -44,8 +60,8 @@ public class BitmexService {
                 .addHeader("api-key", bitmexCredentials.getApiKey())
                 .addHeader("api-signature", signature)
                 .setContentType("application/json")
-                .setBody(data)
-                .setMethod(verb);
+                .setBody(trimmedData)
+                .setMethod(verb.toUpperCase());
     }
 
     private String calculateHash(String apiSecret, String verb, String path, long expires, String data)

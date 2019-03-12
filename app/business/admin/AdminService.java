@@ -7,12 +7,12 @@ import models.Admin;
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 
-public class AdminHelper {
+public class AdminService {
 
     private final AdminRepository adminRepository;
 
     @Inject
-    public AdminHelper(AdminRepository adminRepository) {
+    public AdminService(AdminRepository adminRepository) {
         this.adminRepository = adminRepository;
     }
 

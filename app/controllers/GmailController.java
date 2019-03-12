@@ -1,10 +1,19 @@
 package controllers;
 
+import business.gmail.GmailRepository;
+import play.mvc.Controller;
 import play.mvc.Result;
 
-import static play.mvc.Results.TODO;
+import javax.inject.Inject;
 
-public class GmailController {
+public class GmailController extends Controller {
+
+    private GmailRepository gmailRepository;
+
+    @Inject
+    public GmailController(GmailRepository gmailRepository) {
+        this.gmailRepository = gmailRepository;
+    }
 
     public Result create() {
 
