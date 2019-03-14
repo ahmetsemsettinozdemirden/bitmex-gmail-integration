@@ -38,11 +38,11 @@ public class AdminService {
 
     public Admin signUp(String username, String password) throws ClientException, ServerException {
 
-        if ("".equals(username.trim()))
-            throw new ClientException("InvalidUsername", "Username can not be empty.");
+        if (username == null || username.equals(""))
+            throw new ClientException("InvalidUsername", "Username can not be null or empty.");
 
-        if ("".equals(password.trim()))
-            throw new ClientException("InvalidPassword", "Password can not be empty.");
+        if (password == null || password.equals(""))
+            throw new ClientException("InvalidPassword", "Password can not be null or empty.");
 
         Admin admin = adminRepository.getAdmin(username);
 

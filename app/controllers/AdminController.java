@@ -43,7 +43,7 @@ public class AdminController extends Controller {
         AdminForm adminBody = adminForm.get();
 
         try {
-            return ok(Json.toJson(adminService.signIn(adminBody.username, adminBody.password)));
+            return ok(Json.toJson(adminService.signIn(adminBody.username.trim(), adminBody.password.trim())));
         } catch (ClientException e) {
             return errorHandler.onClientError(BAD_REQUEST, "admin-signIn-" + e.getErrorCode(), e.getMessage(),
                     request().method() + " " + request().uri());
@@ -67,7 +67,7 @@ public class AdminController extends Controller {
         AdminForm adminBody = adminForm.get();
 
         try {
-            return ok(Json.toJson(adminService.signUp(adminBody.username, adminBody.password)));
+            return ok(Json.toJson(adminService.signUp(adminBody.username.trim(), adminBody.password.trim())));
         } catch (ClientException e) {
             return errorHandler.onClientError(BAD_REQUEST, "admin-signUp-" + e.getErrorCode(), e.getMessage(),
                     request().method() + " " + request().uri());

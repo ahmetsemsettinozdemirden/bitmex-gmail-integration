@@ -46,7 +46,7 @@ public class BitmexController extends Controller {
         BitmexForm bitmexBody = bitmexForm.get();
 
         try {
-            bitmexRepository.setCredentials(bitmexBody.apiKey, bitmexBody.apiSecret);
+            bitmexRepository.setCredentials(bitmexBody.apiKey.trim(), bitmexBody.apiSecret.trim());
         } catch (ClientException e) {
             return errorHandler.onClientError(BAD_REQUEST, "bitmex-update-" + e.getErrorCode(), e.getMessage(),
                     request().method() + " " + request().uri());

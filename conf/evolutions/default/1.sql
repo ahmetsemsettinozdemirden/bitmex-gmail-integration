@@ -25,7 +25,7 @@ create table bitmex_credentials (
 create table gmail_credentials (
   id                            bigint auto_increment not null,
   email                         varchar(255) not null,
-  credentials                   varchar(255) not null,
+  credentials                   varchar(800) not null,
   created_at                    timestamp not null,
   updated_at                    timestamp not null,
   constraint pk_gmail_credentials primary key (id)

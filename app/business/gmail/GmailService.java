@@ -12,15 +12,18 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
+import models.GmailCredentials;
 import play.Environment;
 import play.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Set;
@@ -34,12 +37,14 @@ public class GmailService {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     private final Environment environment;
+    private final GmailRepository gmailRepository;
     private final Logger.ALogger logger = Logger.of(this.getClass());
     private Gmail gmail;
 
     @Inject
-    public GmailService(Environment environment) {
+    public GmailService(Environment environment, GmailRepository gmailRepository) {
         this.environment = environment;
+        this.gmailRepository = gmailRepository;
     }
 
     /**
@@ -48,15 +53,14 @@ public class GmailService {
      * @return An authorized Credential object.
      * @throws IOException If the credentials.json file cannot be found.
      */
-    private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    private Credential createCredentials(final NetHttpTransport HTTP_TRANSPORT, final GmailCredentials gmailCredentials) throws IOException {
         // Load client secrets.
-        logger.info("credential path: {}", environment.rootPath() + "/gmail/credentials.json");
-        InputStream in = new FileInputStream(environment.rootPath() + "/gmail/credentials.json");
+        logger.debug("credentials email: {}.", gmailCredentials.getEmail());
+        final InputStream in = new ByteArrayInputStream(gmailCredentials.getCredentials().getBytes(StandardCharsets.UTF_8));
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
                 .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(environment.rootPath() + "/gmail/tokens")))
                 .setAccessType("offline")
                 .build();
@@ -66,8 +70,9 @@ public class GmailService {
 
     public void initialize() throws IOException, GeneralSecurityException {
         if (gmail == null) {
+            final GmailCredentials gmailCredentials = gmailRepository.getCredentials().get(0); // TODO
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            this.gmail = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+            this.gmail = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, createCredentials(HTTP_TRANSPORT, gmailCredentials))
                     .setApplicationName(APPLICATION_NAME)
                     .build();
         } else {

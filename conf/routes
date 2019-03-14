@@ -2,9 +2,8 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# An example controller showing a sample home page
+# Home
 GET     /                           controllers.HomeController.index
-
 
 # Admin
 POST    /admin/signIn               controllers.AdminController.signIn
@@ -17,12 +16,21 @@ GET     /bitmex                     controllers.BitmexController.get
 + admin
 POST    /bitmex                     controllers.BitmexController.update
 
-# TODO: gmail
+# Gmail
++ admin
+POST    /gmail                      controllers.GmailController.create
++ admin
+GET     /gmail                      controllers.GmailController.getAll
++ admin
+GET     /gmail/:id                  controllers.GmailController.get(id: Long)
++ admin
+PUT     /gmail/:id                  controllers.GmailController.update(id: Long)
++ admin
+DELETE  /gmail/:id                  controllers.GmailController.delete(id: Long)
 
 # Quartz Scheduler
 + admin
 POST    /quartz-scheduler/status/:status controllers.QuartzSchedulerController.status(status: String)
-
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

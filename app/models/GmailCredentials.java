@@ -1,8 +1,10 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.CreatedTimestamp;
+import io.ebean.annotation.Length;
 import io.ebean.annotation.NotNull;
 import io.ebean.annotation.UpdatedTimestamp;
 
@@ -20,6 +22,7 @@ public class GmailCredentials extends Model {
     private String email;
 
     @NotNull
+    @Length(800)
     private String credentials;
 
     @CreatedTimestamp
@@ -55,10 +58,12 @@ public class GmailCredentials extends Model {
         this.credentials = credentials;
     }
 
+    @JsonIgnore
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    @JsonIgnore
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
