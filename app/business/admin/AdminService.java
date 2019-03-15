@@ -10,10 +10,12 @@ import java.io.UnsupportedEncodingException;
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final AdminHelper adminHelper;
 
     @Inject
-    public AdminService(AdminRepository adminRepository) {
+    public AdminService(AdminRepository adminRepository, AdminHelper adminHelper) {
         this.adminRepository = adminRepository;
+        this.adminHelper = adminHelper;
     }
 
     public Admin signIn(String username, String password) throws ClientException, ServerException {
@@ -21,16 +23,16 @@ public class AdminService {
         Admin admin = adminRepository.getAdmin(username);
 
         if (admin == null)
-            throw new ClientException("AdminCouldNotFound", "Admin account with username: '" + username + "' couldn't found!");
+            throw new ClientException("adminCouldNotFound", "Admin account with username: '" + username + "' couldn't found!");
 
         if (!admin.getPassword().equals(password))
-            throw new ClientException("PasswordDoesNotMatch", "Admin account with username: '" + username + "' couldn't found!");
+            throw new ClientException("passwordDoesNotMatch", "Admin account with username: '" + username + "' couldn't found!");
 
         try {
-            adminRepository.refreshToken(admin);
+            adminHelper.refreshToken(admin);
             admin.save();
         } catch (Exception e) {
-            throw new ServerException("RefreshTokenError", e);
+            throw new ServerException("refreshTokenError", e);
         }
 
         return admin;
@@ -39,21 +41,21 @@ public class AdminService {
     public Admin signUp(String username, String password) throws ClientException, ServerException {
 
         if (username == null || username.equals(""))
-            throw new ClientException("InvalidUsername", "Username can not be null or empty.");
+            throw new ClientException("invalidUsername", "Username can not be null or empty.");
 
         if (password == null || password.equals(""))
-            throw new ClientException("InvalidPassword", "Password can not be null or empty.");
+            throw new ClientException("invalidPassword", "Password can not be null or empty.");
 
         Admin admin = adminRepository.getAdmin(username);
 
         if (admin != null)
-            throw new ClientException("UserExists", "Username already exists. Please use a different username.");
+            throw new ClientException("userExists", "Username already exists. Please use a different username.");
 
         try {
             admin = adminRepository.createAdmin(username, password);
             admin.save();
         } catch (UnsupportedEncodingException e) {
-            throw new ServerException("RefreshToken", e);
+            throw new ServerException("refreshToken", e);
         }
 
         return admin;

@@ -1,5 +1,6 @@
 package business.bitmex;
 
+import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.BitmexCredentials;
@@ -37,7 +38,7 @@ public class BitmexHelper {
             logger.debug("getPositions response: {}.", wsResponse.getBody());
 
             if (wsResponse.getStatus() >= 400)
-                throw new ServerException("http-error", new Exception(wsResponse.getBody()));
+                throw new ServerException("httpError", new Exception(wsResponse.getBody()));
 
             List<BitmexPosition> positions = new ArrayList<>();
             for (JsonNode positionNode: response) {
@@ -45,16 +46,17 @@ public class BitmexHelper {
                         positionNode.get("currentQty").asInt()));
             }
             return positions;
-        } catch (InterruptedException | ExecutionException e) {
-            throw new ServerException("execute-request", e);
+        } catch (InterruptedException | ExecutionException | ClientException e) {
+            throw new ServerException("executeRequest", e);
         }
     }
 
     public void makeMarketOrder(BitmexPosition bitmexPosition) throws ServerException {
 
         BitmexCredentials bitmexCredentials = bitmexRepository.getCredentials();
-        String data = "{\"symbol\":\"" + bitmexPosition.getSymbol() +
-                "\",\"orderQty\":" + bitmexPosition.getQuantity() + ",\"ordType\":\"Market\"}";
+        String data = "{\"symbol\":\"" + bitmexPosition.getSymbol() + "\"," +
+                "\"orderQty\":" + bitmexPosition.getQuantity() + "," +
+                "\"ordType\":\"Market\"}";
         String verb = "POST";
         String path = "/api/v1/order";
 
@@ -64,9 +66,9 @@ public class BitmexHelper {
             logger.debug("makeOrder response: {}.", wsResponse.getBody());
 
             if (wsResponse.getStatus() >= 400)
-                throw new ServerException("http-error", new Exception(wsResponse.getBody()));
-        } catch (InterruptedException | ExecutionException e) {
-            throw new ServerException("execute-request", e);
+                throw new ServerException("httpError", new Exception(wsResponse.getBody()));
+        } catch (InterruptedException | ExecutionException | ClientException e) {
+            throw new ServerException("executeRequest", e);
         }
     }
 

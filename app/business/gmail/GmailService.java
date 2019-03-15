@@ -19,13 +19,14 @@ import play.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 @Singleton
@@ -38,13 +39,14 @@ public class GmailService {
 
     private final Environment environment;
     private final GmailRepository gmailRepository;
+    private List<Gmail> gmails;
     private final Logger.ALogger logger = Logger.of(this.getClass());
-    private Gmail gmail;
 
     @Inject
     public GmailService(Environment environment, GmailRepository gmailRepository) {
         this.environment = environment;
         this.gmailRepository = gmailRepository;
+        this.gmails = new ArrayList<>();
     }
 
     /**
@@ -64,24 +66,29 @@ public class GmailService {
                 .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(environment.rootPath() + "/gmail/tokens")))
                 .setAccessType("offline")
                 .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
+    // TODO: call initialize when emails are updated
     public void initialize() throws IOException, GeneralSecurityException {
-        if (gmail == null) {
-            final GmailCredentials gmailCredentials = gmailRepository.getCredentials().get(0); // TODO
+        // free up resources
+        for (Gmail gmail: gmails)
+            gmail.getRequestFactory().getTransport().shutdown();
+        this.gmails = new ArrayList<>();
+
+        // initialize gmail clients
+        List<GmailCredentials> gmailCredentialsList = gmailRepository.getCredentials();
+        for(GmailCredentials gmailCredentials: gmailCredentialsList) {
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            this.gmail = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, createCredentials(HTTP_TRANSPORT, gmailCredentials))
+            gmails.add(new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, createCredentials(HTTP_TRANSPORT, gmailCredentials))
                     .setApplicationName(APPLICATION_NAME)
-                    .build();
-        } else {
-            throw new RuntimeException("Gmail instance is already initialized!");
+                    .build());
         }
     }
 
-    public Gmail getGmail() {
-        return gmail;
+    public List<Gmail> getGmails() {
+        return gmails;
     }
 
 }

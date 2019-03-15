@@ -10,13 +10,13 @@ public class GmailRepository {
     public GmailCredentials addCredentials(String email, String credentials) throws ClientException {
 
         if (email == null || email.equals(""))
-            throw new ClientException("email", "email can not be null or empty.");
+            throw new ClientException("nullEmail", "email can not be null or empty.");
 
         if (credentials == null || credentials.equals(""))
-            throw new ClientException("apiSecret", "apiSecret can not be null or empty.");
+            throw new ClientException("nullApiSecret", "apiSecret can not be null or empty.");
 
         if (getCredentials(email) != null)
-            throw new ClientException("emailexists", "email already exists!");
+            throw new ClientException("emailExists", "email already exists!");
 
         GmailCredentials gmailCredentials = new GmailCredentials(email, credentials);
         gmailCredentials.save();
@@ -40,7 +40,7 @@ public class GmailRepository {
         GmailCredentials gmailCredentials = getCredentials(id);
 
         if (gmailCredentials == null)
-            throw new ClientException("credentialsdoesnotexist", "credentials does not exist!");
+            throw new ClientException("credentialsNotFound", "credentials could not found!");
 
         gmailCredentials.setEmail(email);
         gmailCredentials.setCredentials(credentials);
@@ -53,7 +53,7 @@ public class GmailRepository {
         GmailCredentials gmailCredentials = getCredentials(id);
 
         if (gmailCredentials == null)
-            throw new ClientException("credentialsdoesnotexist", "credentials does not exist!");
+            throw new ClientException("credentialsNotFound", "credentials could not found!");
 
         return gmailCredentials.delete();
     }

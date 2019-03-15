@@ -1,5 +1,6 @@
 package business.scheduler;
 
+import business.exceptions.ClientException;
 import business.scheduler.jobs.GmailToBitmexJob;
 import com.google.inject.Injector;
 import org.quartz.Job;
@@ -46,9 +47,16 @@ public class QuartzScheduler {
         scheduler.standby();
     }
 
-    public void triggerJob(String jobName, String jobGroup) throws SchedulerException {
+    public void triggerJob(String jobName, String jobGroup) throws SchedulerException, ClientException {
         checkSchedulerInitialized();
+        if (scheduler.checkExists(JobKey.jobKey(jobName, jobGroup)))
+            throw new ClientException("jobnotfound", "jobName or jobGroup is wrong!");
         scheduler.triggerJob(JobKey.jobKey(jobName, jobGroup));
+    }
+
+    private void checkSchedulerInitialized() {
+        if (scheduler == null)
+            throw new RuntimeException("Quartz Scheduler is not initialized! Make sure that initialized() is successfully completed.");
     }
 
     public void initialize() throws SchedulerException {
@@ -72,7 +80,7 @@ public class QuartzScheduler {
         scheduler.clear();
 
         logger.info("Schedule jobs...");
-        scheduleJob(GmailToBitmexJob.class, "0 * * * * ?");
+        scheduleJob(GmailToBitmexJob.class, "0 * * * * ?"); // TODO: seconds instead of cron
         logger.debug("job names: " + scheduler.getJobKeys(GroupMatcher.anyJobGroup()));
 
         scheduler.start();
@@ -89,11 +97,6 @@ public class QuartzScheduler {
                         .withIdentity(clazz.getName(), "default")
                         .withSchedule(cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("GMT+03:00")))
                         .build());
-    }
-
-    private void checkSchedulerInitialized() {
-        if (scheduler == null)
-            throw new RuntimeException("Quartz Scheduler is not initialized! Make sure that initialized() is successfully completed.");
     }
 
 }

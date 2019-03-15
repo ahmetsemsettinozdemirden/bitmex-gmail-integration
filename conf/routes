@@ -30,7 +30,9 @@ DELETE  /gmail/:id                  controllers.GmailController.delete(id: Long)
 
 # Quartz Scheduler
 + admin
-POST    /quartz-scheduler/status/:status controllers.QuartzSchedulerController.status(status: String)
+POST    /quartz-scheduler/status/:status                controllers.QuartzSchedulerController.status(status: String)
++ admin
+POST    /quartz-scheduler/trigger/:jobName/:jobGroup    controllers.QuartzSchedulerController.trigger(jobName: String, jobGroup: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

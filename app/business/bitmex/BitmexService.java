@@ -1,5 +1,6 @@
 package business.bitmex;
 
+import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import models.BitmexCredentials;
 import play.Logger;
@@ -26,27 +27,27 @@ public class BitmexService {
     }
 
     public WSRequest createRequest(BitmexCredentials bitmexCredentials, String data, String verb, String path)
-            throws ServerException {
+            throws ServerException, ClientException {
 
         if (bitmexCredentials == null)
-            throw new RuntimeException("bitmexCredentials can not be null.");
+            throw new ClientException("nullBitmexCredentials", "bitmexCredentials can not be null.");
 
         if (data == null || data.equals(""))
-            throw new RuntimeException("data can not be null or empty.");
+            throw new ClientException("nullData", "data can not be null or empty.");
 
         if (!"get".equalsIgnoreCase(verb) && !"post".equalsIgnoreCase(verb) &&
                 !"put".equalsIgnoreCase(verb) && !"delete".equalsIgnoreCase(verb))
-            throw new RuntimeException("verb should be an http request method, see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods");
+            throw new ClientException("badVerb", "verb should be an http request method, see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods");
 
         if (path == null || path.equals(""))
-            throw new RuntimeException("path can not be null or empty.");
+            throw new ClientException("nullPath", "path can not be null or empty.");
 
         String signature;
         long expires = LocalDateTime.now().plusMinutes(1).toInstant(ZoneOffset.UTC).toEpochMilli();
         try {
             signature = calculateHash(bitmexCredentials.getApiSecret(), verb, path, expires, data);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new ServerException("hash-calculation", e);
+            throw new ServerException("hashCalculation", e);
         }
 
         return wsClient.url("https://testnet.bitmex.com" + path)

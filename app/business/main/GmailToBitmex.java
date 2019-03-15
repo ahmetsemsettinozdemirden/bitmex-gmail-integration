@@ -2,6 +2,7 @@ package business.main;
 
 import business.bitmex.BitmexHelper;
 import business.bitmex.BitmexPosition;
+import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import business.gmail.GmailHelper;
 import play.Logger;
@@ -26,10 +27,10 @@ public class GmailToBitmex {
     public void execute() {
         logger.info("GmailToBitmexJob is starting...");
 
-        logger.debug("checking gmail...");
+        logger.debug("Checking gmail accounts...");
         List<BitmexPosition> desiredPositions = new ArrayList<>();
         try {
-            List<String> tips = gmailHelper.getTradingViewTip();
+            List<String> tips = gmailHelper.getTradingViewTips();
             for (String tip: tips) {
                 String[] parts = tip.split(",");
 
@@ -41,15 +42,18 @@ public class GmailToBitmex {
                     desiredPositions.add(new BitmexPosition(parts[0], Integer.parseInt(parts[1])));
             }
             logger.debug("{} tips found.", desiredPositions.size());
+        } catch (ClientException e) {
+            logger.error(e.getErrorCode() + " - " + e.getMessage());
+            return;
         } catch (IOException e) {
             logger.error("email error", e);
             return;
         }
 
         if (desiredPositions.isEmpty()) {
-            logger.debug("no bitmex updates...");
+            logger.debug("No Bitmex updates...");
         } else {
-            logger.debug("buy/sell on bitmex...");
+            logger.debug("Make buy/sell on Bitmex...");
             for (BitmexPosition desiredPosition: desiredPositions) {
                 try {
                     BitmexPosition calculatedPosition = new BitmexPosition(desiredPosition.getSymbol(), desiredPosition.getQuantity());
@@ -61,7 +65,7 @@ public class GmailToBitmex {
                     }
                     bitmexHelper.makeMarketOrder(calculatedPosition);
                 } catch (ServerException e) {
-                    logger.error("bitmex make order error!", e);
+                    logger.error("Bitmex make order error!", e);
                 }
             }
         }
