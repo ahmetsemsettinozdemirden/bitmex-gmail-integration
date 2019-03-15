@@ -61,7 +61,7 @@ public class JwtFilter extends Filter {
 
             VerifiedJwt verifiedJwt = res.right.get();
 
-            Admin admin = adminRepository.getAdmin(verifiedJwt.getUsername());
+            Admin admin = adminRepository.get(verifiedJwt.getUsername());
 
             if (admin == null)
                 return errorHandler.onClientErrorCompletionStage(requestHeader, BAD_REQUEST, "ERR_ADMIN_NOT_FOUND", ERR_ADMIN_NOT_FOUND);

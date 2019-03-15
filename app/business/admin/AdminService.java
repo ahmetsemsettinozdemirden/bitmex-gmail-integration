@@ -6,6 +6,7 @@ import models.Admin;
 
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 public class AdminService {
 
@@ -20,7 +21,7 @@ public class AdminService {
 
     public Admin signIn(String username, String password) throws ClientException, ServerException {
 
-        Admin admin = adminRepository.getAdmin(username);
+        Admin admin = adminRepository.get(username);
 
         if (admin == null)
             throw new ClientException("adminCouldNotFound", "Admin account with username: '" + username + "' couldn't found!");
@@ -46,13 +47,13 @@ public class AdminService {
         if (password == null || password.equals(""))
             throw new ClientException("invalidPassword", "Password can not be null or empty.");
 
-        Admin admin = adminRepository.getAdmin(username);
+        Admin admin = adminRepository.get(username);
 
         if (admin != null)
             throw new ClientException("userExists", "Username already exists. Please use a different username.");
 
         try {
-            admin = adminRepository.createAdmin(username, password);
+            admin = adminRepository.create(username, password);
             admin.save();
         } catch (UnsupportedEncodingException e) {
             throw new ServerException("refreshToken", e);

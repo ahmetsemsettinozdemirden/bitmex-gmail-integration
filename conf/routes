@@ -9,6 +9,14 @@ GET     /                           controllers.HomeController.index
 POST    /admin/signIn               controllers.AdminController.signIn
 + admin
 POST    /admin/signUp               controllers.AdminController.signUp
++ admin
+GET     /admin                      controllers.AdminController.getAll
++ admin
+GET     /admin/:id                  controllers.AdminController.get(id: Long)
++ admin
+PUT     /admin/:id                  controllers.AdminController.update(id: Long)
++ admin
+DELETE  /admin/:id                  controllers.AdminController.delete(id: Long)
 
 # Bitmex
 + admin
