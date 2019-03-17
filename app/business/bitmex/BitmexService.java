@@ -2,6 +2,7 @@ package business.bitmex;
 
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
+import business.settings.SettingsService;
 import models.BitmexCredentials;
 import play.Logger;
 import play.libs.ws.WSClient;
@@ -19,11 +20,13 @@ import java.time.ZoneOffset;
 public class BitmexService {
 
     private final WSClient wsClient;
+    private final SettingsService settingsService;
     private final Logger.ALogger logger = Logger.of(this.getClass());
 
     @Inject
-    public BitmexService(WSClient wsClient) {
+    public BitmexService(WSClient wsClient, SettingsService settingsService) {
         this.wsClient = wsClient;
+        this.settingsService = settingsService;
     }
 
     public WSRequest createRequest(BitmexCredentials bitmexCredentials, String data, String verb, String path)
@@ -50,7 +53,7 @@ public class BitmexService {
             throw new ServerException("hashCalculation", e);
         }
 
-        return wsClient.url("https://testnet.bitmex.com" + path)
+        return wsClient.url(settingsService.getSetting("bitmexUri").getValue() + path)
                 .addHeader("content-type", "application/json")
                 .addHeader("Accept", "application/json")
                 .addHeader("X-Requested-With", "XMLHttpRequest")

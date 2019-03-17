@@ -22,6 +22,15 @@ create table bitmex_credentials (
   constraint pk_bitmex_credentials primary key (id)
 );
 
+create table entry (
+  id                            bigint auto_increment not null,
+  key                           varchar(255) not null,
+  value                         varchar(255) not null,
+  created_at                    timestamp not null,
+  updated_at                    timestamp not null,
+  constraint pk_entry primary key (id)
+);
+
 create table gmail_credentials (
   id                            bigint auto_increment not null,
   email                         varchar(255) not null,
@@ -37,6 +46,8 @@ create table gmail_credentials (
 drop table if exists admin;
 
 drop table if exists bitmex_credentials;
+
+drop table if exists entry;
 
 drop table if exists gmail_credentials;
 

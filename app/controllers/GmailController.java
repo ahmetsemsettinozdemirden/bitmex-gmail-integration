@@ -3,7 +3,7 @@ package controllers;
 import business.exceptions.ClientException;
 import business.gmail.GmailRepository;
 import business.handlers.ErrorHandler;
-import controllers.forms.gmail.GmailForm;
+import controllers.forms.GmailForm;
 import models.GmailCredentials;
 import play.data.Form;
 import play.data.FormFactory;

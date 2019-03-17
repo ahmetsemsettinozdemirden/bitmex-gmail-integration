@@ -1,4 +1,4 @@
-package controllers.forms.admin;
+package controllers.forms;
 
 import play.data.validation.Constraints;
 

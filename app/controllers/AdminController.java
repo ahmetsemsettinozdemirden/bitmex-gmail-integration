@@ -5,7 +5,7 @@ import business.admin.AdminService;
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import business.handlers.ErrorHandler;
-import controllers.forms.admin.AdminForm;
+import controllers.forms.AdminForm;
 import models.Admin;
 import play.data.Form;
 import play.data.FormFactory;

@@ -1,6 +1,7 @@
 package business.gmail;
 
 import business.exceptions.ClientException;
+import business.settings.SettingsService;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.Gmail.Users.Threads;
 import com.google.api.services.gmail.model.MessagePartHeader;
@@ -17,15 +18,14 @@ import java.util.List;
  */
 public class GmailHelper {
 
-    // TODO: conf
-    private static final String FROM_MAIL = "ahmetozdemirden@std.iyte.edu.tr";
-
     private final GmailService gmailService;
+    private final SettingsService settingsService;
     private final Logger.ALogger logger = Logger.of(this.getClass());
 
     @Inject
-    public GmailHelper(GmailService gmailService) {
+    public GmailHelper(GmailService gmailService, SettingsService settingsService) {
         this.gmailService = gmailService;
+        this.settingsService = settingsService;
     }
 
     public List<String> getTradingViewTips() throws IOException, ClientException {
@@ -34,7 +34,7 @@ public class GmailHelper {
         for (Gmail gmail: gmails) {
             Threads gmailThreads = gmail.users().threads();
             List<Thread> threads = gmailThreads.list("me")
-                    .setQ("from:" + FROM_MAIL + " is:unread")
+                    .setQ("from:" + settingsService.getSetting("fromMail").getValue() + " is:unread")
                     .execute().getThreads();
             if (threads != null) {
                 for (Thread thread: threads) {

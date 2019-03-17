@@ -2,6 +2,7 @@ package business.scheduler;
 
 import business.exceptions.ClientException;
 import business.scheduler.jobs.GmailToBitmexJob;
+import business.settings.SettingsService;
 import com.google.inject.Injector;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -20,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
+import static org.quartz.SimpleScheduleBuilder.repeatSecondlyForever;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 @Singleton
@@ -27,14 +29,16 @@ public class QuartzScheduler {
 
     private final Injector guice;
     private final ApplicationLifecycle lifecycle;
+    private final SettingsService settingsService;
     private final Logger.ALogger logger = Logger.of(this.getClass());
 
     private Scheduler scheduler;
 
     @Inject
-    public QuartzScheduler(Injector guice, ApplicationLifecycle lifecycle) {
+    public QuartzScheduler(Injector guice, ApplicationLifecycle lifecycle, SettingsService settingsService) {
         this.guice = guice;
         this.lifecycle = lifecycle;
+        this.settingsService = settingsService;
     }
 
     public void start() throws SchedulerException {
@@ -80,14 +84,14 @@ public class QuartzScheduler {
         scheduler.clear();
 
         logger.info("Schedule jobs...");
-        scheduleJob(GmailToBitmexJob.class, "0 * * * * ?"); // TODO: seconds instead of cron
+        scheduleJob(GmailToBitmexJob.class, Integer.parseInt(settingsService.getSetting("timeInterval").getValue()));
         logger.debug("job names: " + scheduler.getJobKeys(GroupMatcher.anyJobGroup()));
 
         scheduler.start();
         logger.info("QuartzWorldScheduler started.");
     }
 
-    private void scheduleJob(Class<? extends Job> clazz, String cron) throws SchedulerException {
+    private void scheduleJob(Class<? extends Job> clazz, int seconds) throws SchedulerException {
         JobDataMap jobDataMap = new JobDataMap();
         scheduler.scheduleJob(
                 newJob(clazz)
@@ -95,7 +99,7 @@ public class QuartzScheduler {
                         .usingJobData(jobDataMap).build(),
                 newTrigger()
                         .withIdentity(clazz.getName(), "default")
-                        .withSchedule(cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("GMT+03:00")))
+                        .withSchedule(repeatSecondlyForever(seconds))
                         .build());
     }
 

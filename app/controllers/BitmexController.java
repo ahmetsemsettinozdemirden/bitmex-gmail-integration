@@ -3,7 +3,7 @@ package controllers;
 import business.bitmex.BitmexRepository;
 import business.exceptions.ClientException;
 import business.handlers.ErrorHandler;
-import controllers.forms.bitmex.BitmexForm;
+import controllers.forms.BitmexForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.ValidationError;

@@ -1,4 +1,4 @@
-package controllers.forms.bitmex;
+package controllers.forms;
 
 import play.data.validation.Constraints;
 

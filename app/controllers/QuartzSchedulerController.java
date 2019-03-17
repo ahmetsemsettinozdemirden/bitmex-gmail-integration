@@ -22,10 +22,15 @@ public class QuartzSchedulerController extends Controller {
 
     public Result status(String status) {
         try {
-            if ("start".equals(status))
+            if ("start".equals(status)) {
                 quartzScheduler.start();
-            else if ("stop".equals(status))
+            } else if ("stop".equals(status)) {
                 quartzScheduler.stop();
+            } else {
+                return errorHandler.onClientError(BAD_REQUEST, "scheduler-status-badstatus",
+                        "unknown status: '" + status + "'",
+                        request().method() + " " + request().uri());
+            }
         } catch (SchedulerException e) {
             return errorHandler.onServerError("scheduler-status-exception", e,
                     request().method() + " " + request().uri());

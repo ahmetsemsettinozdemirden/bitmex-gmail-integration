@@ -34,7 +34,7 @@ public class GmailService {
 
     // if you change SCOPES, delete tokens inside `gmail/tokens`
     private static final Set<String> SCOPES = Collections.singleton(GmailScopes.MAIL_GOOGLE_COM);
-    private static final String APPLICATION_NAME = "bitmex-api"; // TODO: fetch from configs
+    private static final String APPLICATION_NAME = "bitmex-api";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     private final Environment environment;
