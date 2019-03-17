@@ -70,7 +70,6 @@ public class GmailService {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    // TODO: call initialize when emails are updated
     public void initialize() throws IOException, GeneralSecurityException {
         // free up resources
         for (Gmail gmail: gmails)

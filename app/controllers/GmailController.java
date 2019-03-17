@@ -2,6 +2,7 @@ package controllers;
 
 import business.exceptions.ClientException;
 import business.gmail.GmailRepository;
+import business.gmail.GmailService;
 import business.handlers.ErrorHandler;
 import controllers.forms.GmailForm;
 import models.GmailCredentials;
@@ -14,17 +15,22 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 public class GmailController extends Controller {
 
     private final FormFactory formFactory;
     private final GmailRepository gmailRepository;
+    private final GmailService gmailService;
     private final ErrorHandler errorHandler;
 
     @Inject
-    public GmailController(FormFactory formFactory, GmailRepository gmailRepository, ErrorHandler errorHandler) {
+    public GmailController(FormFactory formFactory, GmailRepository gmailRepository,
+                           GmailService gmailService, ErrorHandler errorHandler) {
         this.formFactory = formFactory;
         this.gmailRepository = gmailRepository;
+        this.gmailService = gmailService;
         this.errorHandler = errorHandler;
     }
 
@@ -45,8 +51,12 @@ public class GmailController extends Controller {
         GmailCredentials gmailCredentials;
         try {
             gmailCredentials = gmailRepository.addCredentials(gmailBody.email, gmailBody.credentials);
+            gmailService.initialize();
         } catch (ClientException e) {
             return errorHandler.onClientError(BAD_REQUEST, "gmail-create-" + e.getErrorCode(), e.getMessage(),
+                    request().method() + " " + request().uri());
+        } catch (IOException | GeneralSecurityException e) {
+            return errorHandler.onServerError("gmail-create", e,
                     request().method() + " " + request().uri());
         }
 
@@ -81,9 +91,14 @@ public class GmailController extends Controller {
         GmailForm gmailBody = gmailForm.get();
 
         try {
-            return ok(Json.toJson(gmailRepository.updateCredentials(id, gmailBody.email, gmailBody.credentials)));
+            GmailCredentials credentials = gmailRepository.updateCredentials(id, gmailBody.email, gmailBody.credentials);
+            gmailService.initialize();
+            return ok(Json.toJson(credentials));
         } catch (ClientException e) {
             return errorHandler.onClientError(BAD_REQUEST, "gmail-delete-" + e.getErrorCode(), e.getMessage(),
+                    request().method() + " " + request().uri());
+        } catch (IOException | GeneralSecurityException e) {
+            return errorHandler.onServerError("gmail-create", e,
                     request().method() + " " + request().uri());
         }
     }
@@ -91,8 +106,12 @@ public class GmailController extends Controller {
     public Result delete(Long id) {
         try {
             gmailRepository.deleteCredentials(id);
+            gmailService.initialize();
         } catch (ClientException e) {
             return errorHandler.onClientError(BAD_REQUEST, "gmail-delete-" + e.getErrorCode(), e.getMessage(),
+                    request().method() + " " + request().uri());
+        } catch (IOException | GeneralSecurityException e) {
+            return errorHandler.onServerError("gmail-create", e,
                     request().method() + " " + request().uri());
         }
         return ok();

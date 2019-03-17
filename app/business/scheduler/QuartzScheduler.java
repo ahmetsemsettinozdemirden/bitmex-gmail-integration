@@ -53,7 +53,7 @@ public class QuartzScheduler {
 
     public void triggerJob(String jobName, String jobGroup) throws SchedulerException, ClientException {
         checkSchedulerInitialized();
-        if (scheduler.checkExists(JobKey.jobKey(jobName, jobGroup)))
+        if (!scheduler.checkExists(JobKey.jobKey(jobName, jobGroup)))
             throw new ClientException("jobnotfound", "jobName or jobGroup is wrong!");
         scheduler.triggerJob(JobKey.jobKey(jobName, jobGroup));
     }
@@ -95,10 +95,10 @@ public class QuartzScheduler {
         JobDataMap jobDataMap = new JobDataMap();
         scheduler.scheduleJob(
                 newJob(clazz)
-                        .withIdentity(clazz.getName(), "default")
+                        .withIdentity(clazz.getSimpleName(), "default")
                         .usingJobData(jobDataMap).build(),
                 newTrigger()
-                        .withIdentity(clazz.getName(), "default")
+                        .withIdentity(clazz.getSimpleName(), "default")
                         .withSchedule(repeatSecondlyForever(seconds))
                         .build());
     }
