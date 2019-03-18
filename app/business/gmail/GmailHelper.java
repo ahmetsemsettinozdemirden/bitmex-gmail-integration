@@ -3,7 +3,6 @@ package business.gmail;
 import business.exceptions.ClientException;
 import business.settings.SettingsService;
 import com.google.api.services.gmail.Gmail;
-import com.google.api.services.gmail.Gmail.Users.Threads;
 import com.google.api.services.gmail.model.MessagePartHeader;
 import com.google.api.services.gmail.model.Thread;
 import play.Logger;
@@ -32,7 +31,7 @@ public class GmailHelper {
         List<String> tips = new ArrayList<>();
         List<Gmail> gmails = gmailService.getGmails();
         for (Gmail gmail: gmails) {
-            Threads gmailThreads = gmail.users().threads();
+            Gmail.Users.Threads gmailThreads = gmail.users().threads();
             List<Thread> threads = gmailThreads.list("me")
                     .setQ("from:" + settingsService.getSetting("fromMail").getValue() + " is:unread")
                     .execute().getThreads();
@@ -48,8 +47,8 @@ public class GmailHelper {
                     }
                     gmailThreads.trash("me", threadData.getId()).execute();
                 }
-                return tips;
             }
+            return tips;
         }
         throw new ClientException("nogmailservices", "No gmail services exist.");
     }

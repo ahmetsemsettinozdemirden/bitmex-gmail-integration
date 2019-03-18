@@ -63,7 +63,7 @@ public class GmailService {
 
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(environment.rootPath() + "/gmail/tokens")))
+                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(environment.rootPath() + "/gmail/tokens/" + gmailCredentials.getId())))
                 .setAccessType("offline")
                 .build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().build();
