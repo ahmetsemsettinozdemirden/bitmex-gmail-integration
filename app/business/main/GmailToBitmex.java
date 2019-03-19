@@ -32,7 +32,8 @@ public class GmailToBitmex {
         try {
             List<String> tips = gmailHelper.getTradingViewTips();
             for (String tip: tips) {
-                String[] parts = tip.split(",");
+                // tip example: "TradingView Alert: <symbol>,<quantity>"
+                String[] parts = tip.split(": ")[1].split(",");
 
                 if (parts.length != 2)
                     throw new RuntimeException("tip must include 2 parts, tip: " + tip);
