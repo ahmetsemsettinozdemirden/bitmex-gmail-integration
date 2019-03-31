@@ -1,12 +1,12 @@
 package filters;
 
 import akka.stream.Materializer;
-import business.admin.AdminRepository;
+import db.repository.AdminRepository;
 import business.handlers.ErrorHandler;
 import business.jwt.JwtAttrs;
 import business.jwt.JwtValidator;
 import business.jwt.VerifiedJwt;
-import models.Admin;
+import db.models.Admin;
 import play.libs.F;
 import play.mvc.Filter;
 import play.mvc.Http;

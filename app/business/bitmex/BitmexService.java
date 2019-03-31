@@ -3,7 +3,7 @@ package business.bitmex;
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import business.settings.SettingsService;
-import models.BitmexCredentials;
+import db.models.BitmexCredentials;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;

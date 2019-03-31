@@ -1,6 +1,6 @@
 package business.jwt;
 
-import models.Admin;
+import db.models.Admin;
 import play.libs.typedmap.TypedKey;
 
 public class JwtAttrs {

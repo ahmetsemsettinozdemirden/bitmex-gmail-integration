@@ -1,6 +1,7 @@
 package controllers;
 
 import business.handlers.ErrorHandler;
+import business.settings.Settings;
 import business.settings.SettingsService;
 import controllers.forms.SettingsForm;
 import play.data.Form;
@@ -43,7 +44,8 @@ public class SettingsController extends Controller {
         }
 
         SettingsForm settingsBody = settingsForm.get();
-        settingsService.updateSettings(settingsBody.bitmexUri, settingsBody.fromMail, settingsBody.timeInterval);
+        Settings settings = new Settings(settingsBody.bitmexUri, settingsBody.fromMail, settingsBody.timeInterval);
+        settingsService.updateSettings(settings);
         return ok();
     }
 

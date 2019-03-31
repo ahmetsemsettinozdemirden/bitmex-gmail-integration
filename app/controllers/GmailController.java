@@ -1,11 +1,11 @@
 package controllers;
 
 import business.exceptions.ClientException;
-import business.gmail.GmailRepository;
+import db.repository.GmailRepository;
 import business.gmail.GmailService;
 import business.handlers.ErrorHandler;
 import controllers.forms.GmailForm;
-import models.GmailCredentials;
+import db.models.GmailCredentials;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.ValidationError;

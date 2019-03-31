@@ -3,7 +3,8 @@ package business.bitmex;
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.BitmexCredentials;
+import db.models.BitmexCredentials;
+import db.repository.BitmexRepository;
 import play.Logger;
 import play.libs.ws.WSResponse;
 

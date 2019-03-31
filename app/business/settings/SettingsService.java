@@ -1,11 +1,9 @@
 package business.settings;
 
-import business.entry.EntryRepository;
-import models.Entry;
+import db.repository.EntryRepository;
+import db.models.Entry;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SettingsService {
 
@@ -20,18 +18,16 @@ public class SettingsService {
         return entryRepository.getEntry(key);
     }
 
-    public List<Entry> getSettings() {
-        List<Entry> settings = new ArrayList<>();
-        settings.add(entryRepository.getEntry("bitmexUri"));
-        settings.add(entryRepository.getEntry("fromMail"));
-        settings.add(entryRepository.getEntry("timeInterval"));
-        return settings;
+    public Settings getSettings() {
+        return new Settings(entryRepository.getEntry("bitmexUri").getValue(),
+                            entryRepository.getEntry("fromMail").getValue(),
+                            entryRepository.getEntry("timeInterval").getValue());
     }
 
-    public void updateSettings(String bitmexUri, String fromMail, String timeInterval) {
-        entryRepository.setEntry("bitmexUri", bitmexUri);
-        entryRepository.setEntry("fromMail", fromMail);
-        entryRepository.setEntry("timeInterval", timeInterval);
+    public void updateSettings(Settings settings) {
+        entryRepository.setEntry("bitmexUri", settings.getBitmexUri());
+        entryRepository.setEntry("fromMail", settings.getFromMail());
+        entryRepository.setEntry("timeInterval", settings.getTimeInterval());
     }
 
 }

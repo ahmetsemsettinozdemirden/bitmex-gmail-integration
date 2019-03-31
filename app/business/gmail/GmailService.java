@@ -12,7 +12,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
-import models.GmailCredentials;
+import db.models.GmailCredentials;
+import db.repository.GmailRepository;
 import play.Environment;
 import play.Logger;
 

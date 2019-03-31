@@ -2,11 +2,11 @@ package business.admin;
 
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
-import models.Admin;
+import db.models.Admin;
+import db.repository.AdminRepository;
 
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 public class AdminService {
 

@@ -1,12 +1,13 @@
 package business.handlers;
 
-import business.admin.AdminRepository;
+import business.settings.Settings;
+import db.repository.AdminRepository;
 import business.admin.AdminService;
-import business.bitmex.BitmexRepository;
+import db.repository.BitmexRepository;
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import business.settings.SettingsService;
-import models.BitmexCredentials;
+import db.models.BitmexCredentials;
 import play.Logger;
 
 import javax.inject.Inject;
@@ -55,10 +56,10 @@ public class DatabaseHandler {
 
     private void createDefaultSettings() {
         if (settingsService.getSetting("bitmexUri") == null) {
-            settingsService.updateSettings(
+            settingsService.updateSettings(new Settings(
                     "https://testnet.bitmex.com",
                     "ahmetozdemirden@std.iyte.edu.tr",
-                    "15");
+                    "15"));
         }
     }
 

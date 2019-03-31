@@ -1,7 +1,7 @@
 package business.admin;
 
 import business.jwt.JwtHelper;
-import models.Admin;
+import db.models.Admin;
 
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;

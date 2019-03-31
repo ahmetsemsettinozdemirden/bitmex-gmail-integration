@@ -1,12 +1,12 @@
 package controllers;
 
-import business.admin.AdminRepository;
+import db.repository.AdminRepository;
 import business.admin.AdminService;
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import business.handlers.ErrorHandler;
 import controllers.forms.AdminForm;
-import models.Admin;
+import db.models.Admin;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.ValidationError;

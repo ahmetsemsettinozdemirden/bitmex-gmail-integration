@@ -1,6 +1,6 @@
 package controllers;
 
-import business.bitmex.BitmexRepository;
+import db.repository.BitmexRepository;
 import business.exceptions.ClientException;
 import business.handlers.ErrorHandler;
 import controllers.forms.BitmexForm;
