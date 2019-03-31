@@ -20,6 +20,9 @@ import javax.inject.Singleton;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+/**
+ * Extends PlayFramework default error handler functionality. String typed messages converted to Json.
+ */
 @Singleton
 public class ErrorHandler extends DefaultHttpErrorHandler {
 
@@ -53,6 +56,12 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
         return Results.status(500 , jsonError(errorCode, e.getMessage(), description));
     }
 
+    /**
+     * Logs error and returns it with json format in development style.
+     * @param request Play request.
+     * @param exception Caught client exception.
+     * @return Result of handled error.
+     */
     @Override
     public CompletionStage<Result> onDevServerError(RequestHeader request, UsefulException exception) {
         long contextId = Http.Context.current().id();
@@ -61,6 +70,12 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
         return CompletableFuture.completedFuture(Results.internalServerError(jsonError("internalservererror", exception.title,"uri" + request.uri() + " " + exception.description)));
     }
 
+    /**
+     * Logs error and returns it with json format in production style.
+     * @param request Play request.
+     * @param exception Caught server exception.
+     * @returnResult of handled error.
+     */
     @Override
     public CompletionStage<Result> onProdServerError(RequestHeader request, UsefulException exception) {
         long contextId = Http.Context.current().id();

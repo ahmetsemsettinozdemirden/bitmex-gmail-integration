@@ -1,12 +1,12 @@
 package controllers;
 
-import db.repository.AdminRepository;
 import business.admin.AdminService;
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
 import business.handlers.ErrorHandler;
 import controllers.forms.AdminForm;
 import db.models.Admin;
+import db.repository.AdminRepository;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.ValidationError;
@@ -17,6 +17,9 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 
+/**
+ * This Controller consists of SignIn, SignUp and CRUD operations of admin account.
+ */
 public class AdminController extends Controller {
 
     private final FormFactory formFactory;
@@ -33,6 +36,10 @@ public class AdminController extends Controller {
         this.errorHandler = errorHandler;
     }
 
+    /**
+     * Sign-in Admin, check username and password, generate and return token.
+     * @return Admin account with Berarer token.
+     */
     @BodyParser.Of(BodyParser.Json.class)
     public Result signIn() {
 
@@ -58,6 +65,11 @@ public class AdminController extends Controller {
         }
     }
 
+    /**
+     * Sign-up Admin, check username and password, check username existance, generate token, save and return admin
+     * account.
+     * @return Created Admin with Bearer token.
+     */
     @BodyParser.Of(BodyParser.Json.class)
     public Result signUp() {
 
@@ -83,10 +95,19 @@ public class AdminController extends Controller {
         }
     }
 
+    /**
+     * Fetches all admin accounts.
+     * @return All admin accounts.
+     */
     public Result getAll() {
         return ok(Json.toJson(adminRepository.getAll()));
     }
 
+    /**
+     * Fetches an Admin account by id.
+     * @param id Admin id.
+     * @return Admin account.
+     */
     public Result get(Long id) {
         Admin admin = adminRepository.get(id);
 
@@ -96,6 +117,11 @@ public class AdminController extends Controller {
             return ok(Json.toJson(admin));
     }
 
+    /**
+     * Updates an Admin account for given body data by id.
+     * @param id Admin id.
+     * @return Updated admin.
+     */
     @BodyParser.Of(BodyParser.Json.class)
     public Result update(Long id) {
 
@@ -118,6 +144,11 @@ public class AdminController extends Controller {
         }
     }
 
+    /**
+     * Deletes an admin account by id.
+     * @param id Admin id.
+     * @return Deleted admin.
+     */
     public Result delete(Long id) {
         try {
             adminRepository.delete(id);

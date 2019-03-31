@@ -10,6 +10,9 @@ import play.Logger;
 
 import javax.inject.Inject;
 
+/**
+ * Guice injector factory for Quartz Jobs.
+ */
 public class GuiceJobFactory implements JobFactory {
 
     private final Injector guice;
@@ -20,6 +23,12 @@ public class GuiceJobFactory implements JobFactory {
         this.guice = guice;
     }
 
+    /**
+     * Creates jobs with Guice injector
+     * @param triggerFiredBundle Quartz job data.
+     * @param scheduler Quartz scheduler instance.
+     * @return Created job with Guice.
+     */
     @Override
     public Job newJob(TriggerFiredBundle triggerFiredBundle, Scheduler scheduler) {
         // Get the job detail so we can get the job class

@@ -1,17 +1,20 @@
 package business.handlers;
 
-import business.settings.Settings;
-import db.repository.AdminRepository;
 import business.admin.AdminService;
-import db.repository.BitmexRepository;
 import business.exceptions.ClientException;
 import business.exceptions.ServerException;
+import business.settings.Settings;
 import business.settings.SettingsService;
 import db.models.BitmexCredentials;
+import db.repository.AdminRepository;
+import db.repository.BitmexRepository;
 import play.Logger;
 
 import javax.inject.Inject;
 
+/**
+ * Checks Database for initial state.
+ */
 public class DatabaseHandler {
 
     private final AdminRepository adminRepository;
@@ -29,6 +32,10 @@ public class DatabaseHandler {
         this.settingsService = settingsService;
     }
 
+    /**
+     * Checks Admin, BitmexCredentials and Settings to make sure that they are in the correct state.
+     * If not makes them in correct state.
+     */
     public void start() {
         logger.info("Database Handler starting...");
         createDefaultAdmin();

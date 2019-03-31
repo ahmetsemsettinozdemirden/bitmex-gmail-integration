@@ -14,6 +14,10 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 
+/**
+ * This Controller consists of Get and Update operations of Settings. Since settings are defined in the system user
+ * should only update settings, not create new ones. Therefore there is no create or delete Settings.
+ */
 public class SettingsController extends Controller {
 
     private final FormFactory formFactory;
@@ -27,10 +31,18 @@ public class SettingsController extends Controller {
         this.errorHandler = errorHandler;
     }
 
+    /**
+     * Fetches applied settings.
+     * @return Applied settings.
+     */
     public Result get() {
         return ok(Json.toJson(settingsService.getSettings()));
     }
 
+    /**
+     * Updates settings for given body data.
+     * @return Updated settings.
+     */
     @BodyParser.Of(BodyParser.Json.class)
     public Result update() {
 

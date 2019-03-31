@@ -10,6 +10,9 @@ import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
+/**
+ * Logs any endpoint activity.
+ */
 public class AuditLoggerFilter extends Filter {
 
     private final Logger.ALogger logger = Logger.of(this.getClass());
@@ -19,6 +22,12 @@ public class AuditLoggerFilter extends Filter {
         super(mat);
     }
 
+    /**
+     * Saves start time and logs endpoint activity with request path, verb, request time and request status.
+     * @param nextFilter Following filter provided by Filters class.
+     * @param requestHeader Header part of the http request.
+     * @return Request with `Request-Time` header.
+     */
     @Override
     public CompletionStage<Result> apply(Function<Http.RequestHeader, CompletionStage<Result>> nextFilter, Http.RequestHeader requestHeader) {
         long startTime = System.currentTimeMillis();

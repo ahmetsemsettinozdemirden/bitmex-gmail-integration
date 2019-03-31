@@ -16,14 +16,15 @@ import play.inject.ApplicationLifecycle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 
-import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.repeatSecondlyForever;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+/**
+ * Construction and management of Quartz Scheduler instance. Main business logic job scheduled in this class.
+ */
 @Singleton
 public class QuartzScheduler {
 
@@ -41,16 +42,31 @@ public class QuartzScheduler {
         this.settingsService = settingsService;
     }
 
+    /**
+     * Starts Quartz scheduler instance.
+     * @throws SchedulerException Already started or any error with scheduler.
+     */
     public void start() throws SchedulerException {
         checkSchedulerInitialized();
         scheduler.start();
     }
 
+    /**
+     * Pauses Quartz scheduler instance.
+     * @throws SchedulerException Already stopped or any error with scheduler.
+     */
     public void stop() throws SchedulerException {
         checkSchedulerInitialized();
         scheduler.standby();
     }
 
+    /**
+     * Triggers a already scheduled job.
+     * @param jobName Name of the job.
+     * @param jobGroup Group of the job.
+     * @throws SchedulerException On job error.
+     * @throws ClientException Job does not exist.
+     */
     public void triggerJob(String jobName, String jobGroup) throws SchedulerException, ClientException {
         checkSchedulerInitialized();
         if (!scheduler.checkExists(JobKey.jobKey(jobName, jobGroup)))
@@ -63,6 +79,10 @@ public class QuartzScheduler {
             throw new RuntimeException("Quartz Scheduler is not initialized! Make sure that initialized() is successfully completed.");
     }
 
+    /**
+     * Constructs Quartz scheduler instance and schedules Bitmex job for given time interval.
+     * @throws SchedulerException On scheduler error.
+     */
     public void initialize() throws SchedulerException {
 
         if (scheduler != null)

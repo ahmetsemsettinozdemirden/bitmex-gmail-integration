@@ -1,5 +1,8 @@
 package business.exceptions;
 
+/**
+ * Encapsulates error code and exception.
+ */
 public class ServerException extends Exception {
 
     private String errorCode;

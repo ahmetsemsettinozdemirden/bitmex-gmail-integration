@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Includes Gmail business logic like checking emails.
  * for more info: https://developers.google.com/gmail/api/quickstart/java
  */
 public class GmailHelper {
@@ -27,6 +28,12 @@ public class GmailHelper {
         this.settingsService = settingsService;
     }
 
+    /**
+     * Checks all emails from repository and filters all TradingView tips. Then deletes email.
+     * @return TradingView tips.
+     * @throws IOException Connection error.
+     * @throws ClientException Gmail account error.
+     */
     public List<String> getTradingViewTips() throws IOException, ClientException {
         List<String> tips = new ArrayList<>();
         List<Gmail> gmails = gmailService.getGmails();

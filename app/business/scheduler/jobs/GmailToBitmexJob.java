@@ -6,9 +6,12 @@ import org.quartz.JobExecutionContext;
 
 import javax.inject.Inject;
 
+/**
+ * Delegates main business logic to achieve decoupling.
+ */
 public class GmailToBitmexJob implements Job {
 
-    public final GmailToBitmex gmailToBitmex;
+    private final GmailToBitmex gmailToBitmex;
 
     @Inject
     public GmailToBitmexJob(GmailToBitmex gmailToBitmex) {

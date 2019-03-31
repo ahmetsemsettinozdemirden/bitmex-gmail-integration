@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ */
 public class GmailToBitmex {
 
     private final GmailHelper gmailHelper;
@@ -24,6 +27,9 @@ public class GmailToBitmex {
         this.bitmexHelper = bitmexHelper;
     }
 
+    /**
+     *
+     */
     public void execute() {
         logger.info("GmailToBitmexJob is starting...");
 

@@ -30,6 +30,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Initiates and manages Gmail clients for all gmail accounts exists in the system.
+ */
 @Singleton
 public class GmailService {
 
@@ -71,6 +74,11 @@ public class GmailService {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
+    /**
+     * Creates Gmail clients for all Gmail accounts from gmail repository.
+     * @throws IOException If the credentials.json file cannot be found.
+     * @throws GeneralSecurityException Gmail token problem.
+     */
     public void initialize() throws IOException, GeneralSecurityException {
         // free up resources
         for (Gmail gmail: gmails)
@@ -87,6 +95,9 @@ public class GmailService {
         }
     }
 
+    /**
+     * @return Gmail clients of Gmail accounts from repository.
+     */
     public List<Gmail> getGmails() {
         return gmails;
     }

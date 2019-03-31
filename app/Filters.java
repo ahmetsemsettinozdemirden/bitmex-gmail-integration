@@ -7,6 +7,9 @@ import play.mvc.EssentialFilter;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * @see <a href="https://www.playframework.com/documentation/2.6.x/Filters">Play Framework, Filters Docs</a>
+ */
 public class Filters extends DefaultHttpFilters {
 
     private final EnabledFilters enabledFilters;
@@ -20,6 +23,10 @@ public class Filters extends DefaultHttpFilters {
         this.auditLoggerFilter = auditLoggerFilter;
     }
 
+    /**
+     * Adds filters in order.
+     * @return Enabled filters.
+     */
     @Override
     public List<EssentialFilter> getFilters() {
         List<EssentialFilter> filters = enabledFilters.asJava().getFilters();

@@ -1,11 +1,11 @@
 package controllers;
 
 import business.exceptions.ClientException;
-import db.repository.GmailRepository;
 import business.gmail.GmailService;
 import business.handlers.ErrorHandler;
 import controllers.forms.GmailForm;
 import db.models.GmailCredentials;
+import db.repository.GmailRepository;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.ValidationError;
@@ -18,6 +18,9 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+/**
+ * This Controller consists of CRUD operations of Gmail accounts in the system.
+ */
 public class GmailController extends Controller {
 
     private final FormFactory formFactory;
@@ -34,6 +37,10 @@ public class GmailController extends Controller {
         this.errorHandler = errorHandler;
     }
 
+    /**
+     * Creates a new Gmail account for given body data.
+     * @return Created Gmail account.
+     */
     @BodyParser.Of(BodyParser.Json.class)
     public Result create() {
 
@@ -63,10 +70,19 @@ public class GmailController extends Controller {
         return created(Json.toJson(gmailCredentials));
     }
 
+    /**
+     * Fetches all gmail accounts.
+     * @return All Gmail accounts.
+     */
     public Result getAll() {
         return ok(Json.toJson(gmailRepository.getCredentials()));
     }
 
+    /**
+     * Fetches a Gmail account by id.
+     * @param id Gmail id.
+     * @return Gmail account.
+     */
     public Result get(Long id) {
         GmailCredentials gmailCredentials = gmailRepository.getCredentials(id);
 
@@ -76,6 +92,11 @@ public class GmailController extends Controller {
             return ok(Json.toJson(gmailCredentials));
     }
 
+    /**
+     * Updates a Gmail account for given body data by id.
+     * @param id Gmail id.
+     * @return Updated Gmail account.
+     */
     @BodyParser.Of(BodyParser.Json.class)
     public Result update(Long id) {
 
@@ -103,6 +124,11 @@ public class GmailController extends Controller {
         }
     }
 
+    /**
+     * Deletes a Gmail
+     * @param id Gmail id.
+     * @return Deleted Gmail account.
+     */
     public Result delete(Long id) {
         try {
             gmailRepository.deleteCredentials(id);

@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Includes necessary Bitmex requests.
+ */
 public class BitmexHelper {
 
     private final BitmexRepository bitmexRepository;
@@ -25,6 +28,11 @@ public class BitmexHelper {
         this.bitmexService = bitmexService;
     }
 
+    /**
+     * Fetches current positions by using bitmex rest api.
+     * @return Current positions in bitmex account.
+     * @throws ServerException any error for http request.
+     */
     public List<BitmexPosition> getPositions() throws ServerException {
 
         BitmexCredentials bitmexCredentials = bitmexRepository.getCredentials();
@@ -52,6 +60,11 @@ public class BitmexHelper {
         }
     }
 
+    /**
+     * makes order by using bitmex rest api.
+     * @param bitmexPosition updated bitmex position.
+     * @throws ServerException any error for http request.
+     */
     public void makeMarketOrder(BitmexPosition bitmexPosition) throws ServerException {
 
         BitmexCredentials bitmexCredentials = bitmexRepository.getCredentials();

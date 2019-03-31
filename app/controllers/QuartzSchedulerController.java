@@ -9,6 +9,9 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 
+/**
+ * This Controller consists of Quartz scheduler operations like start/stop and trigger.
+ */
 public class QuartzSchedulerController extends Controller {
 
     private final QuartzScheduler quartzScheduler;
@@ -20,6 +23,11 @@ public class QuartzSchedulerController extends Controller {
         this.errorHandler = errorHandler;
     }
 
+    /**
+     * Start/Stop Quartz scheduler.
+     * @param status Start or Stop.
+     * @return Ok.
+     */
     public Result status(String status) {
         try {
             if ("start".equals(status)) {
@@ -38,6 +46,12 @@ public class QuartzSchedulerController extends Controller {
         return ok();
     }
 
+    /**
+     * Triggers a job by name and group instantly.
+     * @param jobName Name of the job.
+     * @param jobGroup Group of the job.
+     * @return Ok.
+     */
     public Result trigger(String jobName, String jobGroup) {
         try {
             quartzScheduler.triggerJob(jobName, jobGroup);

@@ -10,6 +10,10 @@ import play.db.ebean.EbeanDynamicEvolutions;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * Initial Class that runs after all injections completed. Since ebean has a problem with constructors, you must not
+ * use any ebean queries in constructor. So that after all objects constructed, we initialize server.
+ */
 @Singleton
 public class ServerInitializer {
 
@@ -32,6 +36,9 @@ public class ServerInitializer {
         initialize();
     }
 
+    /**
+     * Initialization of the server.
+     */
     private void initialize() {
         try {
             logger.info("Initializing server...");

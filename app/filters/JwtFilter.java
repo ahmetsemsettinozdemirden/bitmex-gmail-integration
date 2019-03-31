@@ -1,12 +1,12 @@
 package filters;
 
 import akka.stream.Materializer;
-import db.repository.AdminRepository;
 import business.handlers.ErrorHandler;
 import business.jwt.JwtAttrs;
 import business.jwt.JwtValidator;
 import business.jwt.VerifiedJwt;
 import db.models.Admin;
+import db.repository.AdminRepository;
 import play.libs.F;
 import play.mvc.Filter;
 import play.mvc.Http;
@@ -22,6 +22,9 @@ import static play.mvc.Http.Status.BAD_REQUEST;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.UNAUTHORIZED;
 
+/**
+ * Authentication Filter for Admin. This class uses Bearer Token Authorization to ensure that admin is an verified admin.
+ */
 public class JwtFilter extends Filter {
 
     private static final String HEADER_AUTHORIZATION = "Authorization";
@@ -42,6 +45,14 @@ public class JwtFilter extends Filter {
         this.errorHandler = errorHandler;
     }
 
+    /**
+     * Checks token in request header. Checks request header and endpoint tags if they match. Verifies token and
+     * extracts admin data. Fetches Admin and checks token again. If all controls are successful then proceed with
+     * the following filter.
+     * @param nextFilter Following filter provided by Filters class.
+     * @param requestHeader Header part of the http request.
+     * @return Error or Request with authenticated Admin.
+     */
     @Override
     public CompletionStage<Result> apply(Function<Http.RequestHeader, CompletionStage<Result>> nextFilter, Http.RequestHeader requestHeader) {
 

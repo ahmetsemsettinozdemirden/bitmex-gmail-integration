@@ -22,7 +22,6 @@ target
 # Play
 RUNNING_PID
 bin
-db
 .eclipse
 lib
 logs

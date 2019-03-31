@@ -17,6 +17,9 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+/**
+ * Makes Bitmex server connection.
+ */
 public class BitmexService {
 
     private final WSClient wsClient;
@@ -29,6 +32,16 @@ public class BitmexService {
         this.settingsService = settingsService;
     }
 
+    /**
+     * Creates a request for Bitmex rest api.
+     * @param bitmexCredentials Bitmex account credentials.
+     * @param data Necessary data for request.
+     * @param verb HTTP verb.
+     * @param path Path of the request.
+     * @return Base Bitmex request.
+     * @throws ServerException Hash calculation error.
+     * @throws ClientException Invalid parameters.
+     */
     public WSRequest createRequest(BitmexCredentials bitmexCredentials, String data, String verb, String path)
             throws ServerException, ClientException {
 
